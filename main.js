@@ -15,14 +15,10 @@ function FilterToolTip(el, value = '') {
 
   // Event Listeners
   let select = el.querySelector('select'),
-      form = select.parentNode;
-  this.container.querySelector('#add-filter').addEventListener('click', e => {
-    select.style.display = 'block';
-    select.value = '';
-  });
-  select.addEventListener('change', e => {
+      add = el.querySelector('#add-filter');
+  add.addEventListener('click', e => {
     if(!select.value) return;
-    select.style.display = 'none';
+
     let key = select.value;
     let def = this._definition(key);
     let u = '';
