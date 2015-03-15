@@ -1,0 +1,54 @@
+:root {
+  --theme-highlight-red: #ed2655;
+  --theme-body-background: #fcfcfc;
+  --theme-body-color: #18191a;
+}
+
+#editor ul li button {
+  -moz-appearance: none;
+  border-radius: 50%;
+  width: 12px;
+  height: 12px;
+  background: url(chrome://browser/skin/devtools/app-manager/remove.svg);
+  background-size: 12px 12px;
+  font-size: 0;
+  border: none;
+  cursor: pointer;
+  position: relative;
+  top: -8px;
+}
+
+#editor ul {
+  list-style: none;
+  padding-left: 0;
+}
+
+#editor {
+  background: var(--theme-body-background);
+  color: var(--theme-body-color);
+  padding: 20px 20px;
+  display: inline-block;
+  border: 1px solid #1D1F21;
+  font-family: 'Clear Sans', sans-serif;
+}
+
+#editor input {
+  border-color: var(--theme-body-color);
+}
+
+#editor select {
+  float: right;
+}
+
+#editor > button {
+  -moz-appearance: none;
+  background: url(chrome://browser/skin/devtools/app-manager/add.svg);
+  background-size: 16px 16px;
+  border: none;
+  width: 16px;
+  height: 16px;
+  font-size: 0;
+  display: block;
+  cursor: pointer;
+  float: left;
+}
