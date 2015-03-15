@@ -123,12 +123,12 @@ FilterToolTip.prototype = {
 
     let unit = /\D+/.exec(value);
     unit = unit ? unit[0] : '';
-    if(filter.unit !== "string") value = parseInt(value, 10);
+    if(filter.unit !== 'string') value = parseInt(value, 10);
 
     if(min && value < min) value = min;
     if(max && value > max) value = max;
 
-    if(filter.unit == "string" && value == null) value = '';
+    if(filter.unit == 'string' && value == null) value = '';
 
     this.filters.push({value, unit, name: filter.name});
   },
