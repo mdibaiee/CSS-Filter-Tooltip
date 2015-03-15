@@ -1,21 +1,28 @@
-:root {
-  --theme-highlight-red: #ed2655;
-  --theme-body-background: #fcfcfc;
-  --theme-body-color: #18191a;
+.theme-light #editor > button,
+.theme-light .filter-editor-remove-button {
+  filter: invert(1);
 }
-
-#editor ul li button {
+.filter-editor-remove-button {
   -moz-appearance: none;
   border-radius: 50%;
-  width: 12px;
-  height: 12px;
-  background: url(chrome://browser/skin/devtools/app-manager/remove.svg);
-  background-size: 12px 12px;
+  width: 16px;
+  height: 16px;
+  background: url(chrome://browser/skin/devtools/close@2x.png);
+  background-size: 16px;
+  -moz-margin-start: 10px;
   font-size: 0;
   border: none;
   cursor: pointer;
   position: relative;
-  top: -8px;
+}
+
+#editor {
+  background: var(--theme-toolbar-background);
+  color: var(--theme-body-color);
+  padding: 10px;
+  display: inline-block;
+  border: 1px solid var(--theme-splitter-color);
+  font: message-box;
 }
 
 #editor ul {
@@ -23,27 +30,28 @@
   padding-left: 0;
 }
 
-#editor {
-  background: var(--theme-body-background);
-  color: var(--theme-body-color);
-  padding: 20px 20px;
-  display: inline-block;
-  border: 1px solid #1D1F21;
-  font-family: 'Clear Sans', sans-serif;
+#editor ul li {
+  display: flex;
+  overflow: auto;
+  padding: 5px 0;
 }
 
-#editor input {
-  border-color: var(--theme-body-color);
+.filter-editor-item-label {
+  flex: 0.75;
+}
+.filter-editor-item-editor {
+  flex: 2;
 }
 
 #editor select {
   float: right;
+  font: inherit;
 }
 
 #editor > button {
   -moz-appearance: none;
-  background: url(chrome://browser/skin/devtools/app-manager/add.svg);
-  background-size: 16px 16px;
+  background: url(add.svg);
+  background-size: 18px;
   border: none;
   width: 16px;
   height: 16px;

@@ -48,5 +48,10 @@ let filterList = [
     "name":"sepia",
     "range": [0, 100],
     "unit":"percentage"
+  },
+  {
+    "name":"url",
+    "range": [null, null],
+    "unit":"url"
   }
 ];

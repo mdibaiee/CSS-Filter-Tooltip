@@ -5,21 +5,19 @@
   <title>CSS Filter Tooltip</title>
 
   <link rel='stylesheet' href='main.css'>
+  <link rel='stylesheet' href='chrome://browser/skin/devtools/light-theme.css' id="theme-stylesheet">
 </head>
-<body>
+<body class='theme-light'>
 
   <div id='editor'>
 
     <button id='add-filter'>Add</button>
     <select style='display: none' value=''>
       <option value=''>Select a Filter</option>
-      <option value='blur'>blur</option>
-      <option value='drop-shadow'>drop-shadow</option>
-      <option value='saturate'>saturation</option>
     </select>
   </div>
 
-  <button id='switch'>Switch to Dark Theme</button>
+  <button id='switch'>Toggle Theme</button>
   
   <script src='filterList.js' type="application/javascript;version=1.7"></script>
   <script src='main.js' type="application/javascript;version=1.7"></script>

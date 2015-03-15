@@ -14,8 +14,8 @@ function FilterToolTip(el, value = '') {
   this.setCSS(value);
 
   // Event Listeners
-  let select = el.querySelector('select'),
-      form = select.parentNode;
+  let select = this.filterSelect = el.querySelector('select');
+  this.populateFilterSelect();
   this.container.querySelector('#add-filter').addEventListener('click', e => {
     select.style.display = 'block';
     select.value = '';
@@ -57,19 +57,43 @@ FilterToolTip.prototype = {
     let base = document.createElement('li');
 
     base.appendChild(document.createElement('label'));
+
     base.appendChild(document.createElement('input'));
-    base.appendChild(document.createElement('button'));
+
+    let removeButton = document.createElement('button');
+    removeButton.className = 'filter-editor-remove-button';
+    base.appendChild(removeButton);
 
     for(let [index, filter] of this.filters.entries()) {
       let def = this._definition(filter.name);
 
       let el = base.cloneNode(true);
+
       let [label, input] = el.children;
       let [min, max] = def.range;
 
+      label.className = 'filter-editor-item-label';
       label.textContent = filter.name;
 
-      input.type = 'range';
+      input.classList.add('filter-editor-item-editor');
+      switch (def.unit) {
+        case 'percentage':
+        case 'angle':
+          input.type = 'range';
+          input.classList.add('devtools-rangeinput');
+          break;
+        case 'length':
+          input.type = 'number';
+          input.min = 0;
+          input.classList.add('devtools-textinput');
+          break;
+        case 'url':
+        case 'shadow':
+          input.type = 'text';
+          input.classList.add('devtools-textinput');
+          break;
+      }
+
       if(min !== null) input.min = min;
       if(max !== null) input.max = max;
       input.value = filter.value;
@@ -131,6 +155,14 @@ FilterToolTip.prototype = {
   update(id, value) {
     let filter = this.filters[id];
     filter.value = parseInt(value, 10);
+  },
+  populateFilterSelect() {
+    let select = this.filterSelect;
+    filterList.forEach(function(filter) {
+      let option = document.createElement('option');
+      option.innerHTML = option.value = filter.name;
+      select.appendChild(option);
+    });
   }
 };
 
@@ -153,14 +185,9 @@ tp.render();
 
 
 document.getElementById('switch').addEventListener('click', e => {
-  let style = document.createElement('style');
+  var theme = document.body.className == "theme-dark" ? "theme-light" : "theme-dark";
+  document.body.className = theme;
 
-  style.innerHTML = `:root:root {
-    --theme-body-background: #14171a;
-    --theme-body-color: #8fa1b2;
-    --theme-highlight-red: #eb5368;
-  }`;
-
-  document.head.appendChild(style);
+  document.querySelector("#theme-stylesheet").href = "chrome://browser/skin/devtools/" + (theme == "theme-dark" ? "dark-theme" : "light-theme") + ".css";
 });
 
