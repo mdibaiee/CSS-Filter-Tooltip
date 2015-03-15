@@ -1,4 +1,4 @@
-.theme-light #editor > button,
+.theme-light #add-filter,
 .theme-light .filter-editor-remove-button {
   filter: invert(1);
 }
@@ -44,11 +44,15 @@
 }
 
 #editor select {
-  float: right;
   font: inherit;
+  -moz-margin-end: 10px;
 }
 
-#editor > button {
+#editor-footer {
+  float: right;
+}
+
+#add-filter {
   -moz-appearance: none;
   background: url(add.svg);
   background-size: 18px;
@@ -56,7 +60,6 @@
   width: 16px;
   height: 16px;
   font-size: 0;
-  display: block;
+  vertical-align: middle;
   cursor: pointer;
-  float: left;
 }

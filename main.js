@@ -16,13 +16,11 @@ function FilterToolTip(el, value = '') {
   // Event Listeners
   let select = this.filterSelect = el.querySelector('select');
   this.populateFilterSelect();
-  this.container.querySelector('#add-filter').addEventListener('click', e => {
-    select.style.display = 'block';
-    select.value = '';
-  });
-  select.addEventListener('change', e => {
+
+  let addButton = el.querySelector('#add-filter');
+  addButton.addEventListener('click', e => {
     if(!select.value) return;
-    select.style.display = 'none';
+
     let key = select.value;
     let def = this._definition(key);
     let u = '';
