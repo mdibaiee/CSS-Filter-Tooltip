@@ -34,6 +34,9 @@ function FilterToolTip(el, value = '') {
       case 'angle':
         u = 'deg';
         break;
+      case 'string':
+        u = '';
+        break;
       default:
         u = 'px';
     }
@@ -120,7 +123,7 @@ FilterToolTip.prototype = {
 
     let unit = /\D+/.exec(value);
     unit = unit ? unit[0] : '';
-    value = parseInt(value, 10);
+    if(filter.unit !== "string") value = parseInt(value, 10);
 
     if(min && value < min) value = min;
     if(max && value > max) value = max;
