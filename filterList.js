@@ -16,7 +16,7 @@ let filterList = [
   },
   {
     "name": "drop-shadow",
-    "range": [0, null],
+    "range": [null, null],
     "unit": "string" // Well it's length, but it's also a special case
   },
   {

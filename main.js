@@ -88,8 +88,7 @@ FilterToolTip.prototype = {
           input.min = 0;
           input.classList.add('devtools-textinput');
           break;
-        case 'url':
-        case 'shadow':
+        case 'string':
           input.type = 'text';
           input.classList.add('devtools-textinput');
           break;
@@ -102,6 +101,7 @@ FilterToolTip.prototype = {
 
       this.list.appendChild(el);
       input.addEventListener('change', this._updateEvent.bind(this));
+      input.focus();
     }
   },
   _updateEvent(e) {
@@ -127,6 +127,8 @@ FilterToolTip.prototype = {
 
     if(min && value < min) value = min;
     if(max && value > max) value = max;
+
+    if(filter.unit == "string" && value == null) value = '';
 
     this.filters.push({value, unit, name: filter.name});
   },
