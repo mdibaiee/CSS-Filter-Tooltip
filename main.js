@@ -220,7 +220,7 @@ FilterToolTip.prototype = {
               multiplier = 0.1;
               startValue = parseFloat(input.value, 10);
               startX = lastX;
-            } else if (e.shif tKey) {
+            } else if (e.shiftKey) {
               multiplier = 10;
               startValue = parseFloat(input.value, 10);
               startX = lastX;
