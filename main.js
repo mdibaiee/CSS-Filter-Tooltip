@@ -49,7 +49,7 @@ function FilterToolTip(el, value = "") {
   this.list.addEventListener("click", e => {
     if(e.target.tagName.toLowerCase() === "button") {
       let key = e.target.previousElementSibling.previousElementSibling.textContent;
-      this.remove(e.target.previousElementSibling.id);
+      this.remove(e.parentNode.id);
       this.render();
     }
   });
@@ -67,6 +67,7 @@ function FilterToolTip(el, value = "") {
 
 
     let index = Array.prototype.indexOf.call(this.list.children, dragging);
+    let draggingId = parseInt(dragging.id, 10);
     let dest = index + push;
 
     if(push === 0 || // there's no change
@@ -77,6 +78,8 @@ function FilterToolTip(el, value = "") {
        dest > this.list.children.length) return;
 
     let target = push > 0 ? this.list.children[dest+1] : this.list.children[dest];
+
+    this._swapIndex(index, dest);
 
     if(target)
       this.list.insertBefore(dragging, target);
@@ -107,7 +110,9 @@ FilterToolTip.prototype = {
     removeButton.className = "filter-editor-remove-button";
     base.appendChild(removeButton);
 
-    for(let [index, filter] of this.filters.entries()) {
+    let sorted = this.filters.sort((a, b) => a.index - b.index);
+
+    for(let [index, filter] of sorted.entries()) {
       let def = this._definition(filter.name);
 
       let el = base.cloneNode(true);
@@ -216,14 +221,22 @@ FilterToolTip.prototype = {
       }
 
       input.value = filter.value;
-      input.id = index;
+      el.id = index;
 
       this.list.appendChild(el);
       input.addEventListener("change", this._updateEvent.bind(this));
     }
   },
+  _swapIndex(a, b) {
+    let first = this.filters.find(x => x.index === a),
+        second = this.filters.find(x => x.index === b);
+
+    let tmp = first.index;
+    first.index = second.index;
+    second.index = tmp;
+  },
   _updateEvent(e) {
-    this.update(e.target.id, e.target.value);
+    this.update(e.target.parentNode.id, e.target.value);
   },
   _definition(name) {
     return filterList.find(a => a.name === name);
@@ -246,7 +259,7 @@ FilterToolTip.prototype = {
       if(max && value > max) value = max;
     }
 
-    this.filters.push({value, unit, name: def.name});
+    this.filters.push({value, unit, name: def.name, index: this.filters.length});
   },
   value(id) {
     let filter = this.get(id);
