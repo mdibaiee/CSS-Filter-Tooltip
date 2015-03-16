@@ -166,7 +166,7 @@ FilterToolTip.prototype = {
 
       if(min !== null) input.min = min;
       if(max !== null) input.max = max;
-      else { // if there's no maximum value, use photoshop-style inputs
+      if(!max && def.type !== "string") { // if there's no maximum value, use photoshop-style inputs
         let startX = 0,
             lastX = 0,
             startValue = 0,
