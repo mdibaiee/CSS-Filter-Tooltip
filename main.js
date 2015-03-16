@@ -26,7 +26,7 @@ function FilterToolTip(el, value = "") {
     let key = select.value;
     let def = this._definition(key);
     let u = "";
-    switch (def.unit) {
+    switch (def.type) {
       case "percentage":
         u = "%";
         break;
@@ -43,7 +43,7 @@ function FilterToolTip(el, value = "") {
         u = "px";
     }
 
-    this.add(key, (def.range[0] || "")  + u);
+    this.add(key, (def.range[0] || "0") + u);
     this.render();
   });
   this.list.addEventListener("click", e => {
@@ -130,7 +130,7 @@ FilterToolTip.prototype = {
         el.removeAttribute("style");
       });
 
-      switch (def.unit) {
+      switch (def.type) {
         case "percentage":
         case "angle":
           input.type = "range";
@@ -220,7 +220,6 @@ FilterToolTip.prototype = {
 
       this.list.appendChild(el);
       input.addEventListener("change", this._updateEvent.bind(this));
-      input.focus();
     }
   },
   _updateEvent(e) {
@@ -233,30 +232,27 @@ FilterToolTip.prototype = {
     return this.filters[id];
   },
   add(name, value) {
-    let filter = this._definition(name);
-    if(!filter) return false;
-    let [min, max] = filter.range;
+    let def = this._definition(name);
+    if(!def) return false;
 
-    let unit = filter.unit === "string" ? "" : /\D+/.exec(value);
+    let unit = def.type === "string" ? "" : /\D+/.exec(value);
     unit = unit ? unit[0] : "";
 
-    if(filter.unit !== "string") {
+    if(def.type !== "string") {
       value = parseFloat(value);
 
+      let [min, max] = def.range;
       if(min && value < min) value = min;
       if(max && value > max) value = max;
     }
 
-    this.filters.push({value, unit, name: filter.name});
+    this.filters.push({value, unit, name: def.name});
   },
   value(id) {
     let filter = this.get(id);
     if(!filter) return false;
 
-    let def = this._definition(filter.name);
-    if(!def) return false;
-
-    let val = filter.value || (def.unit === "string" ? "" : "0"),
+    let val = filter.value || (filter.unit ? "0" : ""),
         unit = filter.unit || "";
 
     return val + unit;
@@ -278,8 +274,7 @@ FilterToolTip.prototype = {
   },
   update(id, value) {
     let filter = this.get(id);
-    let def = this._definition(filter.name);
-    filter.value = def.unit === "string" ? value : parseFloat(value);
+    filter.value = filter.unit ? parseFloat(value) : value;
   },
   populateFilterSelect() {
     let select = this.filterSelect;

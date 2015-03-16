@@ -2,56 +2,56 @@ let filterList = [
   {
     "name": "blur",
     "range": [0,null],
-    "unit": "length"
+    "type": "length"
   },
   {
     "name": "brightness",
     "range": [0, null],
-    "unit": "percentage"
+    "type": "percentage"
   },
   {
     "name": "contrast",
     "range": [0, null],
-    "unit": "percentage"
+    "type": "percentage"
   },
   {
     "name": "drop-shadow",
     "range": [null, null],
-    "unit": "string" // Well it's length, but it's also a special case
+    "type": "string" // Well it's length, but it's also a special case
   },
   {
     "name": "grayscale",
     "range": [0, 100], // You can go over that, but it gives the same results as 100%
-    "unit": "percentage"
+    "type": "percentage"
   },
   {
     "name": "hue-rotate",
     "range": [0,360],
-    "unit": "angle"
+    "type": "angle"
   },
   {
     "name": "invert",
     "range": [0,100],
-    "unit": "percentage"
+    "type": "percentage"
   },
   {
     "name": "opacity",
     "range": [0, 100],
-    "unit": "percentage"
+    "type": "percentage"
   },
   {
     "name": "saturate",
     "range": [0, null],
-    "unit": "percentage"
+    "type": "percentage"
   },
   {
     "name": "sepia",
     "range": [0, 100],
-    "unit": "percentage"
+    "type": "percentage"
   },
   {
     "name": "url",
     "range": [null, null],
-    "unit": "string"
+    "type": "string"
   }
 ];
