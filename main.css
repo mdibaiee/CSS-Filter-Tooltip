@@ -1,5 +1,6 @@
 .theme-light #add-filter,
-.theme-light .filter-editor-remove-button {
+.theme-light .filter-editor-remove-button,
+.theme-light #editor ul li i {
   filter: invert(1);
 }
 .filter-editor-remove-button {
@@ -36,11 +37,50 @@
   padding: 5px 0;
 }
 
+#editor ul li i {
+  width: 6px;
+  height: 6px;
+  margin: 7px 5px;
+  cursor: grab;
+}
+
+#editor ul li i::before {
+  content: '';
+  display: block;
+  width: 6px;
+  height: 1px;
+  background: #EEF0F2;
+  box-shadow: 0 2px 0 0 #EEF0F2,
+              0 -2px 0 0 #EEF0F2;
+}
+
+#editor ul li.dragging {
+  position: relative;
+  z-index: 10;
+  cursor: grab;
+}
+
 .filter-editor-item-label {
   flex: 0.75;
+  -moz-user-select: none;
+}
+.filter-editor-item-label.devtools-draglabel {
+  cursor: ew-resize;
 }
 .filter-editor-item-editor {
   flex: 2;
+}
+.filter-editor-item-editor.devtools-rangeinput {
+  flex: 1.7;
+}
+.filter-editor-item-value {
+  flex: 0.3;
+  text-align: center;
+  max-width: 20px;
+  width: 20px;
+  overflow: visible;
+  position: relative;
+  top: 2px;
 }
 
 #editor select {
