@@ -49,7 +49,7 @@ function FilterToolTip(el, value = "") {
   this.list.addEventListener("click", e => {
     if(e.target.tagName.toLowerCase() === "button") {
       let key = e.target.previousElementSibling.previousElementSibling.textContent;
-      this.remove(e.parentNode.id);
+      this.remove(e.target.parentNode.id);
       this.render();
     }
   });
