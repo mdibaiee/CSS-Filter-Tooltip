@@ -82,6 +82,12 @@
   top: 2px;
 }
 
+/* message shown when there's no filter specified */
+#editor table p {
+  text-align: center;
+  line-height: 20px;
+}
+
 #editor select {
   font: inherit;
   -moz-margin-end: 10px;

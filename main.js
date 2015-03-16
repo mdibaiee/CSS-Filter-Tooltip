@@ -21,7 +21,7 @@ function FilterToolTip(el, value = "") {
 
   let addButton = el.querySelector("#add-filter");
   addButton.addEventListener("click", e => {
-    if(!select.value) return;
+    if (!select.value) return;
 
     let key = select.value;
     let def = this._definition(key);
@@ -47,7 +47,7 @@ function FilterToolTip(el, value = "") {
     this.render();
   });
   this.list.addEventListener("click", e => {
-    if(e.target.tagName.toLowerCase() === "button") {
+    if (e.target.tagName.toLowerCase() === "button") {
       this.remove(e.target.parentNode.parentNode.id);
       this.render();
     }
@@ -55,32 +55,32 @@ function FilterToolTip(el, value = "") {
 
   this.list.addEventListener("mousemove", e => {
     let dragging = this.list.querySelector(".dragging");
-    if(!dragging) return;
+    if (!dragging) return;
 
     let delta = e.pageY - dragging.startingY;
     dragging.style.top = delta + "px";
 
     let push = delta / LIST_ITEM_HEIGHT;
-    if (push > 0) push = Math.floor(push);
-    else if (push < 0) push = Math.round(push);
+    if  (push > 0) push = Math.floor(push);
+    else if  (push < 0) push = Math.round(push);
 
 
     let index = Array.prototype.indexOf.call(this.list.children, dragging);
     let draggingId = parseInt(dragging.id, 10);
     let dest = index + push;
 
-    if(push === 0 || // there's no change
+    if (push === 0 || // there's no change
        push === 1 && index === this.list.children.length-1 || // moving down the last element
        push === -1 && index === 0) return; // moving up the first element
 
-    if (dest < 0 ||
+    if  (dest < 0 ||
        dest > this.list.children.length) return;
 
     let target = push > 0 ? this.list.children[dest+1] : this.list.children[dest];
 
     this._swapIndex(index, dest);
 
-    if(target)
+    if (target)
       this.list.insertBefore(dragging, target);
     else
       this.list.appendChild(dragging);
@@ -90,7 +90,7 @@ function FilterToolTip(el, value = "") {
   });
   this.list.addEventListener("mouseup", e => {
     let dragging = this.list.querySelector(".dragging");
-    if(!dragging) return;
+    if (!dragging) return;
 
     dragging.classList.remove("dragging");
   });
@@ -114,6 +114,10 @@ FilterToolTip.prototype = {
 
     base.appendChild(names);
     base.appendChild(values);
+
+    if (!this.filters.length) {
+      this.list.innerHTML = "<p>No filter specif ied <br/> Add a filter using the list below<";
+    }
 
     let sorted = this.filters.sort((a, b) => a.index - b.index);
 
@@ -176,9 +180,9 @@ FilterToolTip.prototype = {
         break;*/
       }
 
-      if(min !== null) input.min = min;
-      if(max !== null) input.max = max;
-      if(def.type !== "string") { // if there's no maximum value, use photoshop-style inputs
+      if (min !== null) input.min = min;
+      if (max !== null) input.max = max;
+      if (def.type !== "string") { // if  there's no maximum value, use photoshop-style inputs
         let startX = 0,
             lastX = 0,
             startValue = 0,
@@ -191,13 +195,13 @@ FilterToolTip.prototype = {
           startValue = parseFloat(input.value, 10);
 
           const mouseMove = e => {
-            if(startX === null) return;
+            if (startX === null) return;
             lastX = e.clientX;
             let delta = e.clientX - startX;
             let value = startValue + delta*multiplier;
 
-            if(min !== null && value < min) value = min;
-            if(max !== null && value > max) value = max;
+            if (min !== null && value < min) value = min;
+            if (max !== null && value > max) value = max;
 
             input.value = value;
           };
@@ -212,11 +216,11 @@ FilterToolTip.prototype = {
           };
 
           const keyDown = e => {
-            if(e.altKey) {
+            if (e.altKey) {
               multiplier = 0.1;
               startValue = parseFloat(input.value, 10);
               startX = lastX;
-            } else if(e.shiftKey) {
+            } else if (e.shif tKey) {
               multiplier = 10;
               startValue = parseFloat(input.value, 10);
               startX = lastX;
@@ -262,24 +266,24 @@ FilterToolTip.prototype = {
   },
   add(name, value) {
     let def = this._definition(name);
-    if(!def) return false;
+    if (!def) return false;
 
     let unit = def.type === "string" ? "" : /\D+/.exec(value);
     unit = unit ? unit[0] : "";
 
-    if(def.type !== "string") {
+    if (def.type !== "string") {
       value = parseFloat(value);
 
       let [min, max] = def.range;
-      if(min && value < min) value = min;
-      if(max && value > max) value = max;
+      if (min && value < min) value = min;
+      if (max && value > max) value = max;
     }
 
     this.filters.push({value, unit, name: def.name, index: this.filters.length});
   },
   value(id) {
     let filter = this.get(id);
-    if(!filter) return false;
+    if (!filter) return false;
 
     let val = filter.value || (filter.unit ? "0" : ""),
         unit = filter.unit || "";
@@ -295,7 +299,7 @@ FilterToolTip.prototype = {
   css() {
     return this.filters.map((filter, i) => {
       return filter.name + "(" + this.value(i) + ")";
-    }).join(" ");
+    }).join(" ") || "none";
   },
   setCSS(value) {
     value.replace(/\s{2,}/g, " ").split(" ").forEach(a => {
