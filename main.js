@@ -237,8 +237,9 @@ FilterToolTip.prototype = {
     if(!filter) return false;
     let [min, max] = filter.range;
 
-    let unit = /\D+/.exec(value);
+    let unit = filter.unit === "string" ? "" : /\D+/.exec(value);
     unit = unit ? unit[0] : "";
+
     if(filter.unit !== "string") {
       value = parseFloat(value);
 
@@ -293,7 +294,7 @@ FilterToolTip.prototype = {
 
 // Test
 
-let tp = new FilterToolTip(document.getElementById("editor"), "blur(30px) grayscale(200%)");
+let tp = new FilterToolTip(document.getElementById("editor"), "blur(30px) grayscale(200%) drop-shadow(salam)");
 
 tp.render();
 
