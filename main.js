@@ -14,9 +14,11 @@ function FilterToolTip(el, value = '') {
   this.setCSS(value);
 
   // Event Listeners
-  let select = el.querySelector('select'),
-      add = el.querySelector('#add-filter');
-  add.addEventListener('click', e => {
+  let select = this.filterSelect = el.querySelector('select');
+  this.populateFilterSelect();
+
+  let addButton = el.querySelector('#add-filter');
+  addButton.addEventListener('click', e => {
     if(!select.value) return;
 
     let key = select.value;
@@ -31,6 +33,9 @@ function FilterToolTip(el, value = '') {
         break;
       case 'angle':
         u = 'deg';
+        break;
+      case 'string':
+        u = '';
         break;
       default:
         u = 'px';
@@ -53,19 +58,42 @@ FilterToolTip.prototype = {
     let base = document.createElement('li');
 
     base.appendChild(document.createElement('label'));
+
     base.appendChild(document.createElement('input'));
-    base.appendChild(document.createElement('button'));
+
+    let removeButton = document.createElement('button');
+    removeButton.className = 'filter-editor-remove-button';
+    base.appendChild(removeButton);
 
     for(let [index, filter] of this.filters.entries()) {
       let def = this._definition(filter.name);
 
       let el = base.cloneNode(true);
+
       let [label, input] = el.children;
       let [min, max] = def.range;
 
+      label.className = 'filter-editor-item-label';
       label.textContent = filter.name;
 
-      input.type = 'range';
+      input.classList.add('filter-editor-item-editor');
+      switch (def.unit) {
+        case 'percentage':
+        case 'angle':
+          input.type = 'range';
+          input.classList.add('devtools-rangeinput');
+          break;
+        case 'length':
+          input.type = 'number';
+          input.min = 0;
+          input.classList.add('devtools-textinput');
+          break;
+        case 'string':
+          input.type = 'text';
+          input.classList.add('devtools-textinput');
+          break;
+      }
+
       if(min !== null) input.min = min;
       if(max !== null) input.max = max;
       input.value = filter.value;
@@ -73,6 +101,7 @@ FilterToolTip.prototype = {
 
       this.list.appendChild(el);
       input.addEventListener('change', this._updateEvent.bind(this));
+      input.focus();
     }
   },
   _updateEvent(e) {
@@ -94,10 +123,12 @@ FilterToolTip.prototype = {
 
     let unit = /\D+/.exec(value);
     unit = unit ? unit[0] : '';
-    value = parseInt(value, 10);
+    if(filter.unit !== 'string') value = parseInt(value, 10);
 
     if(min && value < min) value = min;
     if(max && value > max) value = max;
+
+    if(filter.unit == 'string' && value == null) value = '';
 
     this.filters.push({value, unit, name: filter.name});
   },
@@ -127,6 +158,14 @@ FilterToolTip.prototype = {
   update(id, value) {
     let filter = this.filters[id];
     filter.value = parseInt(value, 10);
+  },
+  populateFilterSelect() {
+    let select = this.filterSelect;
+    filterList.forEach(function(filter) {
+      let option = document.createElement('option');
+      option.innerHTML = option.value = filter.name;
+      select.appendChild(option);
+    });
   }
 };
 
@@ -149,14 +188,9 @@ tp.render();
 
 
 document.getElementById('switch').addEventListener('click', e => {
-  let style = document.createElement('style');
+  var theme = document.body.className == "theme-dark" ? "theme-light" : "theme-dark";
+  document.body.className = theme;
 
-  style.innerHTML = `:root:root {
-    --theme-body-background: #14171a;
-    --theme-body-color: #8fa1b2;
-    --theme-highlight-red: #eb5368;
-  }`;
-
-  document.head.appendChild(style);
+  document.querySelector("#theme-stylesheet").href = "chrome://browser/skin/devtools/" + (theme == "theme-dark" ? "dark-theme" : "light-theme") + ".css";
 });
 
