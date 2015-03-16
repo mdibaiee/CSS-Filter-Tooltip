@@ -1,6 +1,6 @@
 .theme-light #add-filter,
 .theme-light .filter-editor-remove-button,
-.theme-light #editor ul li i {
+.theme-light #editor i {
   filter: invert(1);
 }
 .filter-editor-remove-button {
@@ -26,38 +26,37 @@
   font: message-box;
 }
 
-#editor ul {
-  list-style: none;
-  padding-left: 0;
+#editor.dragging {
+  -moz-user-select: none;
 }
 
-#editor ul li {
-  display: flex;
-  overflow: auto;
-  padding: 5px 0;
-}
-
-#editor ul li i {
-  width: 6px;
-  height: 6px;
-  margin: 7px 5px;
+#editor i {
+  display: block;
+  float: left;
+  width: 10px;
+  height: 12px;
+  margin: 7px 15px 0px 5px;
   cursor: grab;
 }
 
-#editor ul li i::before {
+#editor i::before {
   content: '';
   display: block;
-  width: 6px;
+  width: 10px;
   height: 1px;
   background: #EEF0F2;
-  box-shadow: 0 2px 0 0 #EEF0F2,
-              0 -2px 0 0 #EEF0F2;
+  box-shadow: 0 3px 0 0 #EEF0F2,
+              0 -3px 0 0 #EEF0F2;
 }
 
-#editor ul li.dragging {
+#editor tr.dragging {
   position: relative;
   z-index: 10;
   cursor: grab;
+}
+
+#editor table {
+  margin-bottom: 20px;
 }
 
 .filter-editor-item-label {

@@ -6,7 +6,7 @@ function FilterToolTip(el, value = "") {
   this.el = el;
   this.val = value;
 
-  let list = document.createElement("ul");
+  let list = el.querySelector("table");
   el.appendChild(list);
   el.insertBefore(list, el.firstChild);
   this.container = el;
@@ -48,8 +48,7 @@ function FilterToolTip(el, value = "") {
   });
   this.list.addEventListener("click", e => {
     if(e.target.tagName.toLowerCase() === "button") {
-      let key = e.target.previousElementSibling.previousElementSibling.textContent;
-      this.remove(e.target.parentNode.id);
+      this.remove(e.target.parentNode.parentNode.id);
       this.render();
     }
   });
@@ -100,15 +99,21 @@ function FilterToolTip(el, value = "") {
 FilterToolTip.prototype = {
   render() {
     this.list.innerHTML = "";
-    let base = document.createElement("li");
+    let base = document.createElement("tr");
 
-    base.appendChild(document.createElement("i"));
-    base.appendChild(document.createElement("label"));
-    base.appendChild(document.createElement("input"));
+    let names = document.createElement("td"),
+        values = document.createElement("td");
+
+    names.appendChild(document.createElement("i"));
+    names.appendChild(document.createElement("label"));
+    values.appendChild(document.createElement("input"));
 
     let removeButton = document.createElement("button");
     removeButton.className = "filter-editor-remove-button";
-    base.appendChild(removeButton);
+    values.appendChild(removeButton);
+
+    base.appendChild(names);
+    base.appendChild(values);
 
     let sorted = this.filters.sort((a, b) => a.index - b.index);
 
@@ -117,7 +122,10 @@ FilterToolTip.prototype = {
 
       let el = base.cloneNode(true);
 
-      let [drag, label, input] = el.children;
+      let [names, values] = el.children,
+          [drag, label] = names.children,
+          input = values.children[0];
+
       let [min, max] = def.range;
 
       label.className = "filter-editor-item-label";
@@ -127,16 +135,30 @@ FilterToolTip.prototype = {
 
       drag.addEventListener("mousedown", e => {
         el.classList.add("dragging");
+        this.container.classList.add("dragging");
         el.startingY = e.pageY;
       });
 
       drag.addEventListener("mouseup", e => {
         el.classList.remove("dragging");
+        this.container.classList.remove("dragging");
         el.removeAttribute("style");
       });
 
       switch (def.type) {
         case "percentage":
+        case "angle":
+        case "length":
+          input.type = "number";
+          input.min = min;
+          input.step = "0.1";
+          input.classList.add("devtools-textinput");
+        break;
+        case "string":
+          input.type = "text";
+          input.classList.add("devtools-textinput");
+        break;
+        /*case "percentage":
         case "angle":
           input.type = "range";
           input.step = "0.1";
@@ -145,28 +167,18 @@ FilterToolTip.prototype = {
           let preview = document.createElement("span");
           preview.textContent = filter.value;
           preview.classList.add("filter-editor-item-value");
-          el.insertBefore(preview, input.nextElementSibling);
+          el.insertBefore(preview, label);
 
           input.addEventListener("input", e => {
             preview.textContent = input.value;
           });
 
-          break;
-        case "length":
-          input.type = "number";
-          input.min = min;
-          input.step = "0.1";
-          input.classList.add("devtools-textinput");
-          break;
-        case "string":
-          input.type = "text";
-          input.classList.add("devtools-textinput");
-          break;
+        break;*/
       }
 
       if(min !== null) input.min = min;
       if(max !== null) input.max = max;
-      if(!max && def.type !== "string") { // if there's no maximum value, use photoshop-style inputs
+      if(def.type !== "string") { // if there's no maximum value, use photoshop-style inputs
         let startX = 0,
             lastX = 0,
             startValue = 0,
@@ -183,7 +195,11 @@ FilterToolTip.prototype = {
             lastX = e.clientX;
             let delta = e.clientX - startX;
             let value = startValue + delta*multiplier;
-            input.value = value >= min ? value+"" : min;
+
+            if(min !== null && value < min) value = min;
+            if(max !== null && value > max) value = max;
+
+            input.value = value;
           };
 
           const mouseUp = e => {
@@ -236,7 +252,7 @@ FilterToolTip.prototype = {
     second.index = tmp;
   },
   _updateEvent(e) {
-    this.update(e.target.parentNode.id, e.target.value);
+    this.update(e.target.parentNode.parentNode.id, e.target.value);
   },
   _definition(name) {
     return filterList.find(a => a.name === name);
@@ -272,6 +288,9 @@ FilterToolTip.prototype = {
   },
   remove(id) {
     this.filters.splice(id, 1);
+    for(let filter of this.filters.slice(id)) {
+      filter.index--;
+    }
   },
   css() {
     return this.filters.map((filter, i) => {
