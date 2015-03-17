@@ -212,8 +212,8 @@ FilterToolTip.prototype = {
           };
 
           const mouseUp = e => {
-            document.body.removeEventListener("mousemove", mouseMove);
-            document.body.removeEventListener("mouseup", mouseUp);
+            removeEventListener("mousemove", mouseMove);
+            removeEventListener("mouseup", mouseUp);
             document.body.removeEventListener("keydown", keyDown);
             document.body.removeEventListener("keyup", keyUp);
             let event = new UIEvent("change");
@@ -240,8 +240,8 @@ FilterToolTip.prototype = {
 
           document.body.addEventListener("keydown", keyDown);
           document.body.addEventListener("keyup", keyUp);
-          document.body.addEventListener("mouseup", mouseUp);
-          document.body.addEventListener("mousemove", mouseMove);
+          addEventListener("mouseup", mouseUp);
+          addEventListener("mousemove", mouseMove);
         });
       }
 
