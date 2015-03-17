@@ -121,7 +121,7 @@ FilterToolTip.prototype = {
     base.appendChild(value);
 
     if (!this.filters.length) {
-      this.list.innerHTML = "<p>No filter specif ied <br/> Add a filter using the list below<";
+      this.list.innerHTML = "<p>No filter specified <br/> Add a filter using the list below</p>";
     }
 
     let sorted = this.filters.sort((a, b) => a.index - b.index);
