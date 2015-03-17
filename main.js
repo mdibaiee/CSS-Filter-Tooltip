@@ -6,7 +6,7 @@ function FilterToolTip(el, value = "") {
   this.el = el;
   this.val = value;
 
-  let list = el.querySelector("table");
+  let list = el.querySelector(".filters");
   el.appendChild(list);
   el.insertBefore(list, el.firstChild);
   this.container = el;
@@ -99,21 +99,26 @@ function FilterToolTip(el, value = "") {
 FilterToolTip.prototype = {
   render() {
     this.list.innerHTML = "";
-    let base = document.createElement("tr");
+    let base = document.createElement("div");
+    base.className = "filter";
 
-    let names = document.createElement("td"),
-        values = document.createElement("td");
+    let name = document.createElement("div");
+    name.className = "filter-name";
 
-    names.appendChild(document.createElement("i"));
-    names.appendChild(document.createElement("label"));
-    values.appendChild(document.createElement("input"));
+    let value = document.createElement("div");
+    value.className = "filter-value";
+
+    name.appendChild(document.createElement("i"));
+    name.appendChild(document.createElement("label"));
+
+    value.appendChild(document.createElement("input"));
 
     let removeButton = document.createElement("button");
-    removeButton.className = "filter-editor-remove-button";
-    values.appendChild(removeButton);
+    removeButton.className = "remove-button";
+    value.appendChild(removeButton);
 
-    base.appendChild(names);
-    base.appendChild(values);
+    base.appendChild(name);
+    base.appendChild(value);
 
     if (!this.filters.length) {
       this.list.innerHTML = "<p>No filter specif ied <br/> Add a filter using the list below<";
@@ -126,16 +131,16 @@ FilterToolTip.prototype = {
 
       let el = base.cloneNode(true);
 
-      let [names, values] = el.children,
-          [drag, label] = names.children,
-          input = values.children[0];
+      let [name, value] = el.children,
+          [drag, label] = name.children,
+          input = value.children[0];
 
       let [min, max] = def.range;
 
-      label.className = "filter-editor-item-label";
+      label.className = "item-label";
       label.textContent = filter.name;
 
-      input.classList.add("filter-editor-item-editor");
+      input.classList.add("item-editor");
 
       drag.addEventListener("mousedown", e => {
         el.classList.add("dragging");
@@ -170,7 +175,7 @@ FilterToolTip.prototype = {
 
           let preview = document.createElement("span");
           preview.textContent = filter.value;
-          preview.classList.add("filter-editor-item-value");
+          preview.classList.add("item-value");
           el.insertBefore(preview, label);
 
           input.addEventListener("input", e => {
@@ -306,7 +311,7 @@ FilterToolTip.prototype = {
       let [key, value] = a.split("(");
       value = value.slice(0, -1); // remove the last parantheses
       this.add(key, value);
-    });    
+    });
   },
   update(id, value) {
     let filter = this.get(id);
