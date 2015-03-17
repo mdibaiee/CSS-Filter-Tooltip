@@ -197,7 +197,13 @@ FilterToolTip.prototype = {
 
         label.addEventListener("mousedown", e => {
           startX = e.clientX;
-          startValue = parseFloat(input.value, 10);
+          startValue = parseFloat(input.value);
+
+          if (e.altKey) {
+            multiplier = 0.1;
+          } else if (e.shiftKey) {
+            multiplier = 10;
+          }
 
           const mouseMove = e => {
             if (startX === null) return;
@@ -214,8 +220,8 @@ FilterToolTip.prototype = {
           const mouseUp = e => {
             removeEventListener("mousemove", mouseMove);
             removeEventListener("mouseup", mouseUp);
-            document.body.removeEventListener("keydown", keyDown);
-            document.body.removeEventListener("keyup", keyUp);
+            removeEventListener("keydown", keyDown);
+            removeEventListener("keyup", keyUp);
             let event = new UIEvent("change");
             input.dispatchEvent(event);
           };
@@ -223,23 +229,23 @@ FilterToolTip.prototype = {
           const keyDown = e => {
             if (e.altKey) {
               multiplier = 0.1;
-              startValue = parseFloat(input.value, 10);
+              startValue = parseFloat(input.value);
               startX = lastX;
             } else if (e.shiftKey) {
               multiplier = 10;
-              startValue = parseFloat(input.value, 10);
+              startValue = parseFloat(input.value);
               startX = lastX;
             }
           };
 
           const keyUp = e => {
             multiplier = 1;
-            startValue = parseFloat(input.value, 10);
+            startValue = parseFloat(input.value);
             startX = lastX;
           };
 
-          document.body.addEventListener("keydown", keyDown);
-          document.body.addEventListener("keyup", keyUp);
+          addEventListener("keydown", keyDown);
+          addEventListener("keyup", keyUp);
           addEventListener("mouseup", mouseUp);
           addEventListener("mousemove", mouseMove);
         });
