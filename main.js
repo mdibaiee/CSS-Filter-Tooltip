@@ -48,7 +48,9 @@ function FilterToolTip(el, value = "") {
   });
   this.list.addEventListener("click", e => {
     if (e.target.tagName.toLowerCase() === "button") {
-      this.remove(e.target.parentNode.parentNode.id);
+      let li = e.target.parentNode.parentNode;
+      let id = parseInt(li.id.slice(7), 10);
+      this.remove(id);
       this.render();
     }
   });
@@ -66,7 +68,6 @@ function FilterToolTip(el, value = "") {
 
 
     let index = Array.prototype.indexOf.call(this.list.children, dragging);
-    let draggingId = parseInt(dragging.id, 10);
     let dest = index + push;
 
     if (push === 0 || // there's no change
@@ -167,27 +168,11 @@ FilterToolTip.prototype = {
           input.type = "text";
           input.classList.add("devtools-textinput");
         break;
-        /*case "percentage":
-        case "angle":
-          input.type = "range";
-          input.step = "0.1";
-          input.classList.add("devtools-rangeinput");
-
-          let preview = document.createElement("span");
-          preview.textContent = filter.value;
-          preview.classList.add("item-value");
-          el.insertBefore(preview, label);
-
-          input.addEventListener("input", e => {
-            preview.textContent = input.value;
-          });
-
-        break;*/
       }
 
       if (min !== null) input.min = min;
       if (max !== null) input.max = max;
-      if (def.type !== "string") { // if  there's no maximum value, use photoshop-style inputs
+      if (def.type !== "string") { // use photoshop-style label-dragging
         let startX = 0,
             lastX = 0,
             startValue = 0,
@@ -214,7 +199,7 @@ FilterToolTip.prototype = {
             if (min !== null && value < min) value = min;
             if (max !== null && value > max) value = max;
 
-            input.value = value;
+            input.value = fixFloat(value);
           };
 
           const mouseUp = e => {
@@ -252,10 +237,22 @@ FilterToolTip.prototype = {
       }
 
       input.value = filter.value;
-      el.id = index;
+      el.id = "filter-"+index;
 
       this.list.appendChild(el);
+      if(filter.unit !== "string") {
+        input.addEventListener("input", e => {
+          e.target.value = fixFloat(e.target.value);
+        });
+      }
       input.addEventListener("change", this._updateEvent.bind(this));
+    }
+
+    let el = document.querySelector("#filter-"+(sorted.length-1)+" input");
+    if(el) {
+      el.focus();
+      // move cursor to end of input
+      el.setSelectionRange(el.value.length, el.value.length);
     }
   },
   _swapIndex(a, b) {
@@ -267,7 +264,10 @@ FilterToolTip.prototype = {
     second.index = tmp;
   },
   _updateEvent(e) {
-    this.update(e.target.parentNode.parentNode.id, e.target.value);
+    let li = e.target.parentNode.parentNode;
+    let id = parseInt(li.id.slice(7), 10);
+    let value = fixFloat(e.target.value, true);
+    this.update(id, value);
   },
   _definition(name) {
     return filterList.find(a => a.name === name);
@@ -332,6 +332,12 @@ FilterToolTip.prototype = {
     });
   }
 };
+
+function fixFloat(a, number) {
+  let fixed = parseFloat(a).toFixed(1);
+  return number ? parseFloat(fixed) : fixed;
+}
+
 
 
 // Test
