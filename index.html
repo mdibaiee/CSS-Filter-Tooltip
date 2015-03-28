@@ -24,6 +24,9 @@
       var img = document.querySelector("img");
       var container = document.getElementById("container");
       var widget = new CSSFilterEditorWidget(container, "blur(2px) contrast(2) brightness(2)");
+
+      img.style.filter = widget.getCssValue();
+
       widget._onChange = function(css) {
         img.style.filter = css;
       }
