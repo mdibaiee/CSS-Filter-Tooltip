@@ -1,6 +1,23 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+
+#container {
+  color: #f5f7fa;
+  padding: 10px;
+  border: 1px solid black;
+  font: message-box;
+  background: #343c45;
+  width: 300px;
+  border-radius: 2px;
+}
+
+#container.dragging {
+  -moz-user-select: none;
+}
+
 .theme-light #add-filter,
-.theme-light .remove-button,
-.theme-light #editor i {
+.theme-light .remove-button {
   filter: invert(1);
 }
 
@@ -12,12 +29,17 @@
 .filter-name,
 .filter-value {
   display: flex;
-  min-width: 150px;
   align-items: center;
 }
 
+.filter-name {
+  padding-right: 10px;
+  flex: 1;
+}
+
 .filter-value {
-  flex-grow: 1;
+  min-width: 150px;
+  flex: 2;
 }
 
 .remove-button {
@@ -30,67 +52,50 @@
   cursor: pointer;
 }
 
-#editor {
-  background: var(--theme-toolbar-background);
-  color: var(--theme-body-color);
-  padding: 10px;
-  border: 1px solid var(--theme-splitter-color);
-  font: message-box;
-  width: 300px;
-}
-
-#editor.dragging {
-  -moz-user-select: none;
-}
-
-#editor i {
+/* drag/drop handle */
+#container i {
   width: 10px;
   margin-right: 15px;
   padding: 10px 0;
   cursor: grab;
 }
 
-#editor i::before {
+#container i::before {
   content: '';
   display: block;
   width: 10px;
   height: 1px;
-  background: #EEF0F2;
-  box-shadow: 0 3px 0 0 #EEF0F2,
-              0 -3px 0 0 #EEF0F2;
+  background: currentColor;
+  box-shadow: 0 3px 0 0 currentColor,
+              0 -3px 0 0 currentColor;
 }
 
-#editor .dragging {
+#container .dragging {
   position: relative;
   z-index: 10;
   cursor: grab;
 }
 
-.item-label {
+.filter-name label {
   -moz-user-select: none;
   flex-grow: 1;
 }
 
-.item-label.devtools-draglabel {
+.filter-name label.devtools-draglabel {
   cursor: ew-resize;
 }
 
-.item-editor {
+.filter-value input {
   min-width: 50%;
   flex-grow: 1;
 }
 
-.item-value {
-  text-align: center;
-  max-width: 20px;
-  width: 20px;
-  overflow: visible;
-  position: relative;
-  top: 2px;
+.filter-value span {
+  flex-grow: 0.6;
 }
 
 /* message shown when there's no filter specified */
-#editor p {
+#container p {
   text-align: center;
   line-height: 20px;
 }
@@ -109,7 +114,7 @@
 
 #add-filter {
   -moz-appearance: none;
-  background: url(add.svg);
+  background: url(chrome://browser/skin/devtools/add.svg);
   background-size: 18px;
   border: none;
   width: 16px;

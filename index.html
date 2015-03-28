@@ -1,28 +1,32 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>CSS Filter Tooltip</title>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <link rel="stylesheet" href="filter-widget.css" type="text/css"/>
+  </head>
+  <body>
 
-  <link rel='stylesheet' href='main.css'>
-  <link rel='stylesheet' href='chrome://browser/skin/devtools/light-theme.css' id="theme-stylesheet">
-</head>
-<body class='theme-light'>
-
-  <div id='editor'>
-    <div class='filters'>
+    <div id="container">
+      <div class="filters">
+      </div>
+      <div id="editor-footer">
+        <select value="">
+          <option value="">Select</option>
+        </select>
+        <button id="add-filter">Add</button>
+      </div>
     </div>
-    <div id='editor-footer'>
-      <select value=''>
-        <option value=''>Select a Filter</option>
-      </select>
-      <button id='add-filter'>Add</button>
-    </div>
-  </div>
 
-  <button id='switch'>Toggle Theme</button>
+    <img src="https://www.evernote.com/shard/s592/sh/492ae9c2-fc06-4235-b9fc-a1364e393fbc/b64b4fc08363d757/res/34e72525-c355-4e8e-b72c-d4bdc6c35037/funny-koala-04.jpg?resizeSmall&width=832" />
 
-  <script src='filterList.js' type="application/javascript;version=1.7"></script>
-  <script src='main.js' type="application/javascript;version=1.7"></script>
-</body>
+    <script src="FilterWidget.es5.js"></script>
+
+    <script>
+      var img = document.querySelector("img");
+      var container = document.getElementById("container");
+      var widget = new CSSFilterEditorWidget(container, "blur(2px) contrast(2) brightness(2)");
+      widget._onChange = function(css) {
+        img.style.filter = css;
+      }
+    </script>
+  </body>
 </html>
