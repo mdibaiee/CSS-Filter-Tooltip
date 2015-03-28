@@ -45,7 +45,7 @@
 .remove-button {
   width: 16px;
   height: 16px;
-  background: url(chrome://browser/skin/devtools/close@2x.png);
+  background: url(./close@2x.png);
   background-size: 16px;
   font-size: 0;
   border: none;
@@ -114,7 +114,7 @@
 
 #add-filter {
   -moz-appearance: none;
-  background: url(chrome://browser/skin/devtools/add.svg);
+  background: url(./add.svg);
   background-size: 18px;
   border: none;
   width: 16px;
