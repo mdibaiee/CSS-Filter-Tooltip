@@ -18,18 +18,21 @@
 
     <img src="http://dibaiee.ir/img/funny-koala.jpg" />
 
+    <script src="shim.js"></script>
     <script src="FilterWidget.es5.js"></script>
-
     <script>
       var img = document.querySelector("img");
       var container = document.getElementById("container");
       var widget = new CSSFilterEditorWidget(container, "blur(2px) contrast(2) brightness(2)");
 
       img.style.filter = widget.getCssValue();
+      img.style.webkitFilter = widget.getCssValue();
 
       widget._onChange = function(css) {
+        console.log(css)
         img.style.filter = css;
-      }
+        img.style.webkitFilter = css;
+      };
     </script>
   </body>
 </html>

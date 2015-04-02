@@ -504,13 +504,6 @@ CSSFilterEditorWidget.prototype = {
         }
       }
     }
-
-    var el = this.list.querySelector(".filter:last-of-type input");
-    if (el) {
-      el.focus();
-      // move cursor to end of input
-      el.setSelectionRange(el.value.length, el.value.length);
-    }
   },
 
   /**
@@ -550,9 +543,7 @@ CSSFilterEditorWidget.prototype = {
     // Apply filter to a temporary element
     // and get the computed value to make parsing
     // easier
-    var tmp = this.doc.createElement("i");
-    tmp.style.filter = value;
-    var computedValue = this.win.getComputedStyle(tmp).filter;
+    var computedValue = value;
 
     var _iteratorNormalCompletion = true;
     var _didIteratorError = false;
