@@ -461,10 +461,7 @@ CSSFilterEditorWidget.prototype = {
       this.list.appendChild(el);
 
       (index => {
-        input.addEventListener("input", e => {
-          if (def.type !== "string") {
-            e.target.value = fixFloat(e.target.value);
-          }
+        input.addEventListener("change", e => {
           this.updateValueAt(index, e.target.value);
         });
       })(index);

@@ -482,9 +482,6 @@ CSSFilterEditorWidget.prototype = {
 
           (function (index) {
             input.addEventListener("input", function (e) {
-              if (def.type !== "string") {
-                e.target.value = fixFloat(e.target.value);
-              }
               _this.updateValueAt(index, e.target.value);
             });
           })(index);
