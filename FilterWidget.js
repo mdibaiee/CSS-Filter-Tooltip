@@ -82,6 +82,8 @@ const filterList = [
   }
 ];
 
+let savedFilters = {};
+
 /**
  * A CSS Filter editor widget used to add/remove/modify
  * filters.
@@ -110,6 +112,8 @@ function CSSFilterEditorWidget(el, value = "") {
   this._mouseDown = this._mouseDown.bind(this);
   this._keyDown = this._keyDown.bind(this);
   this._keyUp = this._keyUp.bind(this);
+  this._showPresets = this._showPresets.bind(this);
+  this._hidePresets = this._hidePresets.bind(this);
 
   this._initMarkup();
   this._buildFilterItemMarkup();
@@ -187,6 +191,10 @@ CSSFilterEditorWidget.prototype = {
     this.addButton.addEventListener("click", this._addButtonClick);
     this.list.addEventListener("click", this._removeButtonClick);
     this.list.addEventListener("mousedown", this._mouseDown);
+    this.presets = this.el.querySelector("#preset-controls");
+    this.presets.addEventListener("click", this._showPresets);
+    this.presInput = this.el.querySelector("#presets");
+    this.presInput.addEventListener("keydown", this._hidePresets);
 
     // These events are event delegators for
     // drag-drop re-ordering and label-dragging
@@ -257,6 +265,38 @@ CSSFilterEditorWidget.prototype = {
     dragging.multiplier = DEFAULT_VALUE_MULTIPLIER;
     dragging.startValue = parseFloat(input.value);
     dragging.startX = dragging.lastX;
+  },
+
+  _showPresets: function(e) {
+    if (e.target.tagName.toLowerCase() !== "button") return;
+
+    this._saving = e.target.id === "save-filter";
+    this.el.querySelector("#presets").classList.add("show");
+  },
+
+  _hidePresets: function(e) {
+    if (e.keyCode === 13) {
+      if (this._saving) {
+        savedFilters[this.presInput.value] = this.getCssValue();
+      } else {
+        this.setCssValue(savedFilters[this.presInput.value]);
+      }
+      this.presInput.classList.remove("show");
+      return;
+    }
+
+    let option = this.doc.createElement("option");
+    let datalist = this.el.querySelector("#autocomplete");
+
+    datalist.innerHTML = "";
+
+    for(let key of Object.keys(savedFilters)) {
+      if (key.indexOf(this.presInput.value) > -1) {
+        let clone = option.cloneNode();
+        clone.value = key;
+        datalist.appendChild(clone);
+      }
+    }
   },
 
   _addButtonClick: function(e) {

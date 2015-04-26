@@ -14,12 +14,21 @@
         </select>
         <button id="add-filter">Add</button>
       </div>
+      <div id="preset-controls">
+        <button id="save-filter">Save Filters</button>
+        <button id="load-filter">Resote Filters</button>
+
+        <input id="presets" list="autocomplete">
+        <datalist id="autocomplete">
+
+        </datalist>
+      </div>
     </div>
 
     <img src="http://dibaiee.ir/img/butterfly.jpg" />
 
     <script src="shim.js"></script>
-    <script src="FilterWidget.es5.js"></script>
+    <script src="FilterWidget.js" type="application/javascript;version=1.8"></script>
     <script>
       var img = document.querySelector("img");
       var container = document.getElementById("container");

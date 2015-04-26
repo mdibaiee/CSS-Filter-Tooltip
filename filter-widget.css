@@ -112,6 +112,29 @@
   margin: 0 3px;
 }
 
+#preset-controls {
+  position: relative;
+  margin-top: 10px;
+  display: flex;
+  justify-content: center;
+}
+
+#preset-controls button {
+  flex: 1;
+}
+
+#presets {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  display: none;
+}
+
+#presets.show {
+  display: block;
+}
+
 #add-filter {
   -moz-appearance: none;
   background: url(./add.svg);
