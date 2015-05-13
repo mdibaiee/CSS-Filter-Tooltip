@@ -52,6 +52,10 @@
   cursor: pointer;
 }
 
+.hidden {
+  display: none !important;
+}
+
 /* drag/drop handle */
 #container i {
   width: 10px;
@@ -112,29 +116,6 @@
   margin: 0 3px;
 }
 
-#preset-controls {
-  position: relative;
-  margin-top: 10px;
-  display: flex;
-  justify-content: center;
-}
-
-#preset-controls button {
-  flex: 1;
-}
-
-#presets {
-  position: absolute;
-  left: 0;
-  top: 0;
-  width: 100%;
-  display: none;
-}
-
-#presets.show {
-  display: block;
-}
-
 #add-filter {
   -moz-appearance: none;
   background: url(./add.svg);
@@ -145,4 +126,29 @@
   font-size: 0;
   vertical-align: middle;
   cursor: pointer;
+}
+
+#toggle-view {
+  width: 100%;
+  margin: 10px auto 0;
+}
+
+.placeholder {
+  opacity: 0.6;
+}
+
+.placeholder:hover {
+  opacity: 1;
+}
+
+[data-placeholder] {
+  height: 13.5px;
+}
+
+[data-placeholder]:empty::before {
+  content: attr(data-placeholder);
+}
+
+[data-placeholder]:focus::before {
+  display: none;
 }

@@ -24,6 +24,8 @@ const DEFAULT_VALUE_MULTIPLIER = 1;
 const LIST_PADDING = 7;
 const LIST_ITEM_HEIGHT = 32;
 
+const ENTER = 13;
+
 const filterList = [
   {
     "name": "blur",
@@ -82,7 +84,7 @@ const filterList = [
   }
 ];
 
-let savedFilters = {};
+let savedFilters = [];
 
 /**
  * A CSS Filter editor widget used to add/remove/modify
@@ -112,8 +114,10 @@ function CSSFilterEditorWidget(el, value = "") {
   this._mouseDown = this._mouseDown.bind(this);
   this._keyDown = this._keyDown.bind(this);
   this._keyUp = this._keyUp.bind(this);
-  this._showPresets = this._showPresets.bind(this);
-  this._hidePresets = this._hidePresets.bind(this);
+  this._toggleView = this._toggleView.bind(this);
+  this._checkNewPreset = this._checkNewPreset.bind(this);
+  this._removePresetClick = this._removePresetClick.bind(this);
+  this._loadPreset = this._loadPreset.bind(this);
 
   this._initMarkup();
   this._buildFilterItemMarkup();
@@ -125,11 +129,12 @@ function CSSFilterEditorWidget(el, value = "") {
 
 CSSFilterEditorWidget.prototype = {
   _initMarkup: function() {
-    let list = this.el.querySelector(".filters");
+    let list = this.el.querySelector("#filters");
     this.el.appendChild(list);
     this.el.insertBefore(list, this.el.firstChild);
     this.container = this.el;
     this.list = list;
+    this.footer = this.el.querySelector("#editor-footer");
 
     this.filterSelect = this.el.querySelector("select");
     this._populateFilterSelect();
@@ -185,16 +190,18 @@ CSSFilterEditorWidget.prototype = {
   },
 
   _addEventListeners: function() {
-    let select = this.filterSelect;
-
     this.addButton = this.el.querySelector("#add-filter");
     this.addButton.addEventListener("click", this._addButtonClick);
     this.list.addEventListener("click", this._removeButtonClick);
     this.list.addEventListener("mousedown", this._mouseDown);
-    this.presets = this.el.querySelector("#preset-controls");
-    this.presets.addEventListener("click", this._showPresets);
-    this.presInput = this.el.querySelector("#presets");
-    this.presInput.addEventListener("keydown", this._hidePresets);
+
+    this.presets = this.el.querySelector("#presets");
+    this.presets.addEventListener("blur", this._checkNewPreset, true);
+    this.presets.addEventListener("click", this._removePresetClick);
+    this.presets.addEventListener("dblclick", this._loadPreset);
+
+    this.toggleView = this.el.querySelector("#toggle-view");
+    this.toggleView.addEventListener("click", this._toggleView);
 
     // These events are event delegators for
     // drag-drop re-ordering and label-dragging
@@ -267,35 +274,18 @@ CSSFilterEditorWidget.prototype = {
     dragging.startX = dragging.lastX;
   },
 
-  _showPresets: function(e) {
-    if (e.target.tagName.toLowerCase() !== "button") return;
+  _toggleView: function(e) {
+    let {presets, list} = this;
+    presets.classList.toggle("hidden");
+    list.classList.toggle("hidden");
+    this.footer.classList.toggle("hidden");
 
-    this._saving = e.target.id === "save-filter";
-    this.el.querySelector("#presets").classList.add("show");
-  },
-
-  _hidePresets: function(e) {
-    if (e.keyCode === 13) {
-      if (this._saving) {
-        savedFilters[this.presInput.value] = this.getCssValue();
-      } else {
-        this.setCssValue(savedFilters[this.presInput.value]);
-      }
-      this.presInput.classList.remove("show");
-      return;
-    }
-
-    let option = this.doc.createElement("option");
-    let datalist = this.el.querySelector("#autocomplete");
-
-    datalist.innerHTML = "";
-
-    for(let key of Object.keys(savedFilters)) {
-      if (key.indexOf(this.presInput.value) > -1) {
-        let clone = option.cloneNode();
-        clone.value = key;
-        datalist.appendChild(clone);
-      }
+    if (presets.classList.contains("hidden")) {
+      this.render();
+      this.toggleView.innerHTML = "Presets";
+    } else {
+      this.renderPresets();
+      this.toggleView.innerHTML = "Filters";
     }
   },
 
@@ -431,6 +421,57 @@ CSSFilterEditorWidget.prototype = {
     this.render();
   },
 
+  _checkNewPreset: function(e) {
+    let preset = e.target.closest(".filter"),
+        label = preset.querySelector('label'),
+        input = preset.querySelector('input');
+
+    if (label.textContent.length > 0) {
+      if (preset.dataset.id) {
+        let p = savedFilters[+preset.dataset.id];
+        p.name = label.textContent;
+        p.filter = input.value;
+      } else {
+        let id = savedFilters.push({
+          name: label.textContent,
+          filter: input.value
+        }) - 1;
+
+        preset.dataset.id = id;
+
+        this.renderPresets();
+      }
+    }
+  },
+
+  _removePresetClick: function(e) {
+    let el = e.target;
+
+    if (el.classList.contains("remove-button")) {
+      let preset = el.closest(".filter");
+
+      let p = savedFilters[+preset.dataset.id];
+
+      savedFilters.splice(savedFilters.indexOf(p), 1);
+
+      this.renderPresets();
+    }
+  },
+
+  _loadPreset: function(e) {
+    console.log('dblclick', e);
+    let el = e.target;
+
+    if (el.tagName.toLowerCase() === "label") {
+      let preset = el.closest(".filter"),
+          input = preset.querySelector("input");
+
+      this.setCssValue(input.value);
+
+      this._toggleView();
+    }
+  },
+
   /**
    * Clears the list and renders filters, binding required events.
    * There are some delegated events bound in _addEventListeners method
@@ -515,6 +556,46 @@ CSSFilterEditorWidget.prototype = {
     }
 
 
+  },
+
+  renderPresets: function() {
+    let base = this._filterItemMarkup;
+
+    this.presets.innerHTML = "";
+
+    for (let [index, preset] of savedFilters.entries()) {
+      let el = base.cloneNode(true);
+
+      let [name, value] = el.children,
+          [drag, label] = name.children,
+          input = value.children[0];
+
+      drag.remove();
+
+      el.dataset.id = index;
+
+      label.textContent = preset.name;
+      label.contentEditable = true;
+      input.value = preset.filter;
+
+      this.presets.appendChild(el);
+    }
+
+    // Placeholder for new presets
+
+    let newPlaceholder = base.cloneNode(true);
+    newPlaceholder.classList.add("placeholder");
+
+    let [name, value] = newPlaceholder.children,
+        [drag, label] = name.children,
+        input = value.children[0];
+
+    drag.remove();
+
+    label.dataset.placeholder = "Add new preset...";
+    label.contentEditable = true;
+    input.value = this.getCssValue();
+    this.presets.appendChild(newPlaceholder);
   },
 
   /**
