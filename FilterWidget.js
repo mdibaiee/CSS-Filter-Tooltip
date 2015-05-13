@@ -24,8 +24,6 @@ const DEFAULT_VALUE_MULTIPLIER = 1;
 const LIST_PADDING = 7;
 const LIST_ITEM_HEIGHT = 32;
 
-const TAB = 9;
-
 const filterList = [
   {
     "name": "blur",
@@ -84,7 +82,7 @@ const filterList = [
   }
 ];
 
-let savedFilters = [];
+let savedPresets = [];
 
 /**
  * A CSS Filter editor widget used to add/remove/modify
@@ -115,12 +113,13 @@ function CSSFilterEditorWidget(el, value = "") {
   this._keyDown = this._keyDown.bind(this);
   this._keyUp = this._keyUp.bind(this);
   this._toggleView = this._toggleView.bind(this);
-  this._checkNewPreset = this._checkNewPreset.bind(this);
-  this._removePresetClick = this._removePresetClick.bind(this);
+  this._presetClick = this._presetClick.bind(this);
   this._loadPreset = this._loadPreset.bind(this);
+  this._savePreset = this._savePreset.bind(this);
 
   this._initMarkup();
   this._buildFilterItemMarkup();
+  this._buildPresetItemMarkup();
   this._addEventListeners();
 
   this.filters = [];
@@ -135,9 +134,13 @@ CSSFilterEditorWidget.prototype = {
     this.container = this.el;
     this.list = list;
     this.footer = this.el.querySelector("#editor-footer");
+    this.savePreset = this.el.querySelector("#save-preset");
+
+    this.savePreset.querySelector("input").value = "";
 
     this.filterSelect = this.el.querySelector("select");
     this._populateFilterSelect();
+    this._refreshPresetsDatalist();
   },
 
   /**
@@ -151,6 +154,18 @@ CSSFilterEditorWidget.prototype = {
       option.innerHTML = option.value = filter.name;
       select.appendChild(option);
     });
+  },
+
+  _refreshPresetsDatalist: function() {
+    let datalist = this.savePreset.querySelector("datalist");
+    datalist.innerHTML = "";
+
+    for (let preset of savedPresets) {
+      let option = this.doc.createElement("option");
+      option.value = preset.name;
+
+      datalist.appendChild(option);
+    }
   },
 
   /**
@@ -189,6 +204,30 @@ CSSFilterEditorWidget.prototype = {
     this._filterItemMarkup = base;
   },
 
+  _buildPresetItemMarkup: function() {
+    let base = this.doc.createElement("div");
+    base.classList.add("preset");
+
+    let name = this.doc.createElement("label");
+    base.appendChild(name);
+
+    let value = this.doc.createElement("span");
+    base.appendChild(value);
+
+    let removeButton = this.doc.createElement("button");
+    removeButton.classList.add("remove-button");
+
+    base.appendChild(removeButton);
+
+    let loadButton = this.doc.createElement("button");
+    loadButton.textContent = "Load";
+    loadButton.classList.add("load-button");
+
+    base.appendChild(loadButton);
+
+    this._presetItemMarkup = base;
+  },
+
   _addEventListeners: function() {
     this.addButton = this.el.querySelector("#add-filter");
     this.addButton.addEventListener("click", this._addButtonClick);
@@ -196,9 +235,10 @@ CSSFilterEditorWidget.prototype = {
     this.list.addEventListener("mousedown", this._mouseDown);
 
     this.presets = this.el.querySelector("#presets");
-    this.presets.addEventListener("blur", this._checkNewPreset, true);
-    this.presets.addEventListener("click", this._removePresetClick);
+    this.presets.addEventListener("click", this._presetClick);
     this.presets.addEventListener("dblclick", this._loadPreset);
+
+    this.savePreset.addEventListener("submit", this._savePreset);
 
     this.toggleView = this.el.querySelector("#toggle-view");
     this.toggleView.addEventListener("click", this._toggleView);
@@ -244,10 +284,6 @@ CSSFilterEditorWidget.prototype = {
   },
 
   _keyDown: function(e) {
-    if (e.keyCode === TAB) {
-      this._tabKey = true;
-    }
-
     let dragging = this._dragging;
     if (!dragging) {
       return;
@@ -283,6 +319,7 @@ CSSFilterEditorWidget.prototype = {
     presets.classList.toggle("hidden");
     list.classList.toggle("hidden");
     this.footer.classList.toggle("hidden");
+    this.savePreset.classList.toggle("hidden");
 
     if (presets.classList.contains("hidden")) {
       this.render();
@@ -425,61 +462,51 @@ CSSFilterEditorWidget.prototype = {
     this.render();
   },
 
-  _checkNewPreset: function(e) {
-    let preset = e.target.closest(".filter"),
-        label = preset.querySelector('label'),
-        input = preset.querySelector('input');
+  _presetClick: function(e) {
+    let el = e.target;
+    let preset = el.closest(".preset");
 
-    if (label.textContent.length > 0) {
-      if (preset.dataset.id) {
-        let p = savedFilters[+preset.dataset.id];
-        p.name = label.textContent;
-        p.filter = input.value;
-      } else {
-        let id = savedFilters.push({
-          name: label.textContent,
-          filter: input.value
-        }) - 1;
+    // remove button
+    if (el.classList.contains("remove-button")) {
+      savedPresets.splice(+preset.dataset.id, 1);
 
-        preset.dataset.id = id;
+      this.renderPresets();
+      this._refreshPresetsDatalist();
+    } else if (el.classList.contains("load-button")) {
+      let p = savedPresets[+preset.dataset.id];
 
-        this.renderPresets();
-
-        if (this._tabKey) {
-          this._tabKey = false;
-
-          this.presets.querySelector(`[data-id='${id}'] input`).focus();
-        }
-      }
+      this.setCssValue(p.value);
+      this.savePreset.querySelector("input").value = p.name;
+      this._toggleView();
     }
   },
 
-  _removePresetClick: function(e) {
-    let el = e.target;
+  _savePreset: function(e) {
+    e.preventDefault();
 
-    if (el.classList.contains("remove-button")) {
-      let preset = el.closest(".filter");
+    let name = e.target.querySelector("input").value,
+        value = this.getCssValue();
 
-      let p = savedFilters[+preset.dataset.id];
+    let index = savedPresets.find(preset => preset.name === name);
 
-      savedFilters.splice(savedFilters.indexOf(p), 1);
-
-      this.renderPresets();
+    if (index > -1) {
+      savedPresets[index].value = value;
+    } else {
+      savedPresets.push({name, value});
     }
+
+    this._refreshPresetsDatalist();
   },
 
   _loadPreset: function(e) {
-    console.log('dblclick', e);
     let el = e.target;
 
-    if (el.tagName.toLowerCase() === "label") {
-      let preset = el.closest(".filter"),
-          input = preset.querySelector("input");
+    let preset = el.closest(".preset"),
+        value = preset.querySelector("span");
 
-      this.setCssValue(input.value);
+    this.setCssValue(value.textContent);
 
-      this._toggleView();
-    }
+    this._toggleView();
   },
 
   /**
@@ -564,48 +591,31 @@ CSSFilterEditorWidget.prototype = {
       // move cursor to end of input
       el.setSelectionRange(el.value.length, el.value.length);
     }
-
-
   },
 
   renderPresets: function() {
-    let base = this._filterItemMarkup;
+    if (!savedPresets.length) {
+      this.presets.innerHTML = `<p> You don't have any saved presets</p>`;
+
+      return;
+    }
+    let base = this._presetItemMarkup;
 
     this.presets.innerHTML = "";
 
-    for (let [index, preset] of savedFilters.entries()) {
+    for (let [index, preset] of savedPresets.entries()) {
       let el = base.cloneNode(true);
 
-      let [name, value] = el.children,
-          [drag, label] = name.children,
-          input = value.children[0];
-
-      drag.remove();
+      let [label, span] = el.children;
 
       el.dataset.id = index;
 
       label.textContent = preset.name;
       label.contentEditable = true;
-      input.value = preset.filter;
+      span.textContent = preset.value;
 
       this.presets.appendChild(el);
     }
-
-    // Placeholder for new presets
-
-    let newPlaceholder = base.cloneNode(true);
-    newPlaceholder.classList.add("placeholder");
-
-    let [name, value] = newPlaceholder.children,
-        [drag, label] = name.children,
-        input = value.children[0];
-
-    drag.remove();
-
-    label.dataset.placeholder = "Add new preset...";
-    label.contentEditable = true;
-    input.value = this.getCssValue();
-    this.presets.appendChild(newPlaceholder);
   },
 
   /**

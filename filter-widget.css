@@ -21,25 +21,39 @@
   filter: invert(1);
 }
 
-.filter {
+.filter, .preset {
   display: flex;
   margin-bottom: 10px;
 }
 
+.preset {
+  height: 21px;
+}
+
 .filter-name,
-.filter-value {
+.filter-value,
+.preset label,
+.preset span {
   display: flex;
   align-items: center;
 }
 
-.filter-name {
+.filter-name, .preset label {
   padding-right: 10px;
   flex: 1;
 }
 
-.filter-value {
+.filter-value, .preset span {
   min-width: 150px;
+  margin-right: 10px;
   flex: 2;
+}
+
+.preset span {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block;
 }
 
 .remove-button {
@@ -57,14 +71,14 @@
 }
 
 /* drag/drop handle */
-#container i {
+#filters i {
   width: 10px;
   margin-right: 15px;
   padding: 10px 0;
   cursor: grab;
 }
 
-#container i::before {
+#filters i::before {
   content: '';
   display: block;
   width: 10px;
@@ -104,9 +118,10 @@
   line-height: 20px;
 }
 
-#editor-footer {
+#editor-footer, #save-preset {
   display: flex;
   justify-content: flex-end;
+  margin: 10px auto;
 }
 
 #editor-footer select {
@@ -116,8 +131,13 @@
   margin: 0 3px;
 }
 
-#add-filter {
-  -moz-appearance: none;
+#save-preset input {
+  flex-grow: 1;
+  margin-right: 10px;
+}
+
+
+#add-filter, .add {
   background: url(./add.svg);
   background-size: 18px;
   border: none;
@@ -130,7 +150,7 @@
 
 #toggle-view {
   width: 100%;
-  margin: 10px auto 0;
+  /*margin: 10px auto 0;*/
 }
 
 .placeholder {
