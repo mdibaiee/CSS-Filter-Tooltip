@@ -24,7 +24,7 @@ const DEFAULT_VALUE_MULTIPLIER = 1;
 const LIST_PADDING = 7;
 const LIST_ITEM_HEIGHT = 32;
 
-const ENTER = 13;
+const TAB = 9;
 
 const filterList = [
   {
@@ -244,6 +244,10 @@ CSSFilterEditorWidget.prototype = {
   },
 
   _keyDown: function(e) {
+    if (e.keyCode === TAB) {
+      this._tabKey = true;
+    }
+
     let dragging = this._dragging;
     if (!dragging) {
       return;
@@ -440,6 +444,12 @@ CSSFilterEditorWidget.prototype = {
         preset.dataset.id = id;
 
         this.renderPresets();
+
+        if (this._tabKey) {
+          this._tabKey = false;
+
+          this.presets.querySelector(`[data-id='${id}'] input`).focus();
+        }
       }
     }
   },
