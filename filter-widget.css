@@ -8,13 +8,63 @@
   border: 1px solid black;
   font: message-box;
   background: #343c45;
-  width: 300px;
+  width: 500px;
   border-radius: 2px;
+}
+
+#container:after {
+  content: "";
+  display: table;
+  clear: both;
 }
 
 #container.dragging {
   -moz-user-select: none;
 }
+
+#filters, #presets {
+  position: relative;
+}
+
+.left-side, .right-side {
+  display: flex;
+  flex-direction: column;
+}
+
+.left-side {
+  float: left;
+  width: 190px;
+  padding-right: 10px;
+}
+
+.right-side {
+  float: right;
+  width: 290px;
+  padding-left: 10px;
+}
+
+#filters-footer, #presets-footer {
+  flex: 1 0 100%;
+  width: 100%;
+  align-self: flex-end;
+}
+
+/*#filters, #filters-footer, #presets, #presets-footer {
+  width: 100%;
+}*/
+
+/*
+#filters, #filters-footer {
+  float: right;
+  width: 290px;
+  margin-left: 10px;
+}
+
+#presets, #presets-footer {
+  float: left;
+  width: 190px;
+  padding-right: 9px;
+}*/
 
 .theme-light #add-filter,
 .theme-light .remove-button {
@@ -27,7 +77,16 @@
 }
 
 .preset {
-  height: 21px;
+  cursor: pointer;
+  padding: 3px 5px;
+}
+
+.preset label {
+  cursor: pointer;
+}
+
+.preset:hover {
+  background: rgba(29, 79, 115, 0.8);
 }
 
 .filter-name,
@@ -49,11 +108,29 @@
   flex: 2;
 }
 
+.preset {
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+
+.preset label {
+  flex: 1 0;
+}
+
+.preset span {
+  flex: 1 0;
+}
+
+.preset .remove-button {
+  order: 2;
+}
+
 .preset span {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   display: block;
+  order: 3;
 }
 
 .remove-button {
@@ -118,13 +195,13 @@
   line-height: 20px;
 }
 
-#editor-footer, #save-preset {
+#filters-footer, #save-preset {
   display: flex;
   justify-content: flex-end;
   margin: 10px auto;
 }
 
-#editor-footer select {
+#filters-footer select {
   flex-grow: 1;
   box-sizing: border-box;
   font: inherit;
@@ -134,6 +211,9 @@
 #save-preset input {
   flex-grow: 1;
   margin-right: 10px;
+  border: none;
+  padding: 3px 5px;
+  border-radius: 3px;
 }
 
 

@@ -112,9 +112,7 @@ function CSSFilterEditorWidget(el, value = "") {
   this._mouseDown = this._mouseDown.bind(this);
   this._keyDown = this._keyDown.bind(this);
   this._keyUp = this._keyUp.bind(this);
-  this._toggleView = this._toggleView.bind(this);
   this._presetClick = this._presetClick.bind(this);
-  this._loadPreset = this._loadPreset.bind(this);
   this._savePreset = this._savePreset.bind(this);
 
   this._initMarkup();
@@ -124,23 +122,24 @@ function CSSFilterEditorWidget(el, value = "") {
 
   this.filters = [];
   this.setCssValue(value);
+  this.renderPresets();
 }
 
 CSSFilterEditorWidget.prototype = {
   _initMarkup: function() {
     let list = this.el.querySelector("#filters");
-    this.el.appendChild(list);
-    this.el.insertBefore(list, this.el.firstChild);
+    // this.el.appendChild(list);
+    // this.el.insertBefore(list, this.el.firstChild);
     this.container = this.el;
     this.list = list;
-    this.footer = this.el.querySelector("#editor-footer");
+    this.footer = this.el.querySelector("#filters-footer");
     this.savePreset = this.el.querySelector("#save-preset");
+    this.presets = this.el.querySelector("#presets");
 
     this.savePreset.querySelector("input").value = "";
 
     this.filterSelect = this.el.querySelector("select");
     this._populateFilterSelect();
-    this._refreshPresetsDatalist();
   },
 
   /**
@@ -154,18 +153,6 @@ CSSFilterEditorWidget.prototype = {
       option.innerHTML = option.value = filter.name;
       select.appendChild(option);
     });
-  },
-
-  _refreshPresetsDatalist: function() {
-    let datalist = this.savePreset.querySelector("datalist");
-    datalist.innerHTML = "";
-
-    for (let preset of savedPresets) {
-      let option = this.doc.createElement("option");
-      option.value = preset.name;
-
-      datalist.appendChild(option);
-    }
   },
 
   /**
@@ -219,12 +206,6 @@ CSSFilterEditorWidget.prototype = {
 
     base.appendChild(removeButton);
 
-    let loadButton = this.doc.createElement("button");
-    loadButton.textContent = "Load";
-    loadButton.classList.add("load-button");
-
-    base.appendChild(loadButton);
-
     this._presetItemMarkup = base;
   },
 
@@ -234,14 +215,9 @@ CSSFilterEditorWidget.prototype = {
     this.list.addEventListener("click", this._removeButtonClick);
     this.list.addEventListener("mousedown", this._mouseDown);
 
-    this.presets = this.el.querySelector("#presets");
     this.presets.addEventListener("click", this._presetClick);
-    this.presets.addEventListener("dblclick", this._loadPreset);
 
     this.savePreset.addEventListener("submit", this._savePreset);
-
-    this.toggleView = this.el.querySelector("#toggle-view");
-    this.toggleView.addEventListener("click", this._toggleView);
 
     // These events are event delegators for
     // drag-drop re-ordering and label-dragging
@@ -312,22 +288,6 @@ CSSFilterEditorWidget.prototype = {
     dragging.multiplier = DEFAULT_VALUE_MULTIPLIER;
     dragging.startValue = parseFloat(input.value);
     dragging.startX = dragging.lastX;
-  },
-
-  _toggleView: function(e) {
-    let {presets, list} = this;
-    presets.classList.toggle("hidden");
-    list.classList.toggle("hidden");
-    this.footer.classList.toggle("hidden");
-    this.savePreset.classList.toggle("hidden");
-
-    if (presets.classList.contains("hidden")) {
-      this.render();
-      this.toggleView.innerHTML = "Presets";
-    } else {
-      this.renderPresets();
-      this.toggleView.innerHTML = "Filters";
-    }
   },
 
   _addButtonClick: function(e) {
@@ -471,13 +431,11 @@ CSSFilterEditorWidget.prototype = {
       savedPresets.splice(+preset.dataset.id, 1);
 
       this.renderPresets();
-      this._refreshPresetsDatalist();
-    } else if (el.classList.contains("load-button")) {
+    } else {
       let p = savedPresets[+preset.dataset.id];
 
       this.setCssValue(p.value);
       this.savePreset.querySelector("input").value = p.name;
-      this._toggleView();
     }
   },
 
@@ -495,18 +453,12 @@ CSSFilterEditorWidget.prototype = {
       savedPresets.push({name, value});
     }
 
-    this._refreshPresetsDatalist();
+    this.renderPresets();
   },
 
   _loadPreset: function(e) {
     let el = e.target;
 
-    let preset = el.closest(".preset"),
-        value = preset.querySelector("span");
-
-    this.setCssValue(value.textContent);
-
-    this._toggleView();
   },
 
   /**
@@ -595,7 +547,7 @@ CSSFilterEditorWidget.prototype = {
 
   renderPresets: function() {
     if (!savedPresets.length) {
-      this.presets.innerHTML = `<p> You don't have any saved presets</p>`;
+      this.presets.innerHTML = `<p>You don't have any saved presets</p>`;
 
       return;
     }
@@ -611,7 +563,7 @@ CSSFilterEditorWidget.prototype = {
       el.dataset.id = index;
 
       label.textContent = preset.name;
-      label.contentEditable = true;
+      // label.contentEditable = true;
       span.textContent = preset.value;
 
       this.presets.appendChild(el);

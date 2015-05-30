@@ -6,26 +6,31 @@
   <body>
 
     <div id="container">
-      <div id="filters"></div>
-      <div id="presets" class="hidden"></div>
+      <div class='left-side'>
+        <div id="presets">
+        </div>
 
-      <div id="editor-footer">
-        <select value="">
-          <option value="">Select</option>
-        </select>
-        <button id="add-filter">Add</button>
+        <div id="presets-footer">
+          <form id="save-preset">
+            <input list="saved" value="" placeholder="New preset...">
+            <button>Save</button>
+          </form>
+        </div>
       </div>
 
-        <hr>
-      <form id="save-preset">
-        <input list="saved" value="">
-        <button>Save</button>
+      <div class='right-side'>
+        <div id="filters">
+        </div>
 
-        <datalist id="saved">
-        </datalist>
-      </form>
+        <div id="filters-footer">
+          <select value="">
+            <option value="">Select</option>
+          </select>
+          <button id="add-filter">Add</button>
+        </div>
+      </div>
 
-      <button id="toggle-view">Presets</button>
+
     </div>
 
     <img src="http://dibaiee.ir/img/butterfly.jpg" />
