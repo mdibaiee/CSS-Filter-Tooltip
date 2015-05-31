@@ -8,22 +8,17 @@
   border: 1px solid black;
   font: message-box;
   background: #343c45;
-  width: 500px;
+  width: 550px;
   border-radius: 2px;
-}
-
-#container:after {
-  content: "";
-  display: table;
-  clear: both;
+  display: flex;
+  height: auto;
+  align-items: stretch;
+  align-content: stretch;
+  position: relative;
 }
 
 #container.dragging {
   -moz-user-select: none;
-}
-
-#filters, #presets {
-  position: relative;
 }
 
 .left-side, .right-side {
@@ -32,39 +27,25 @@
 }
 
 .left-side {
-  float: left;
-  width: 190px;
+  flex: 1 1;
+  max-width: 35%;
   padding-right: 10px;
+  border-right: 1px solid black;
 }
 
 .right-side {
-  float: right;
-  width: 290px;
+  flex: 2 0 60%;
   padding-left: 10px;
 }
 
+#filters, #presets {
+  flex: 1 0;
+}
+
 #filters-footer, #presets-footer {
-  flex: 1 0 100%;
   width: 100%;
   align-self: flex-end;
 }
-
-/*#filters, #filters-footer, #presets, #presets-footer {
-  width: 100%;
-}*/
-
-/*
-#filters, #filters-footer {
-  float: right;
-  width: 290px;
-  margin-left: 10px;
-}
-
-#presets, #presets-footer {
-  float: left;
-  width: 190px;
-  padding-right: 9px;
-}*/
 
 .theme-light #add-filter,
 .theme-light .remove-button {
@@ -82,6 +63,7 @@
 }
 
 .preset label {
+  flex: 1 0;
   cursor: pointer;
 }
 
@@ -97,12 +79,12 @@
   align-items: center;
 }
 
-.filter-name, .preset label {
+.filter-name {
   padding-right: 10px;
   flex: 1;
 }
 
-.filter-value, .preset span {
+.filter-value {
   min-width: 150px;
   margin-right: 10px;
   flex: 2;
@@ -111,14 +93,6 @@
 .preset {
   flex-direction: row;
   flex-wrap: wrap;
-}
-
-.preset label {
-  flex: 1 0;
-}
-
-.preset span {
-  flex: 1 0;
 }
 
 .preset .remove-button {
